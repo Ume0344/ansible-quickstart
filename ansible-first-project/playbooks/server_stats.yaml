@@ -1,0 +1,8 @@
+- name: Play for collecting server stats
+  hosts: test_servers
+  tasks:
+   - name: Ping test servers
+     ansible.builtin.ping:
+   - name: Print message on test servers
+     ansible.builtin.debug:
+      msg: Check Check Check
