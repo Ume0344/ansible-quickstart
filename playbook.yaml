@@ -1,4 +1,4 @@
-- name: p4kube play for kubernetes
+- name: p4kube sample play for kubernetes
   hosts: p4kubehosts
   tasks:
    - name: Ping p4kube hosts

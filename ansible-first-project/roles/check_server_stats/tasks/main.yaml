@@ -1,0 +1,69 @@
+## task file for check_server_stats role
+
+- name: Ping test servers
+  ansible.builtin.ping:
+
+- name: Print message on test servers
+  ansible.builtin.debug:
+    msg: Check Check Check
+
+- name: Display System Information
+  debug:
+    var: ansible_facts
+
+- name: Check if sysstat installed on hosts
+  shell: dpkg -l | grep sysstat
+  register: is_sysstat_installed
+  ignore_errors: true
+  
+- name: Debug is_sysstat_installed output  
+  debug: 
+    msg: "{{ is_sysstat_installed.rc }}"
+
+- name: Install sysstat
+  apt:
+    name: sysstat
+    state: present
+  when: "'sysstat' not in is_sysstat_installed.stdout"
+
+- name: Enable data collection and restart sysstat service
+  shell: | 
+    sudo sed -i 's/ENABLED=.*/ENABLED="true"/' /etc/default/sysstat
+    sudo systemctl restart sysstat
+
+- name: Collect sar information
+  shell: sar -A
+  register: sar_result
+
+- name: Display Uptime and Load
+  shell: uptime
+  register: uptime_result
+
+- name: Display Disk Usage
+  shell: df -h
+  register: disk_result
+
+- name: Display Memory Usage
+  shell: free -m
+  register: memory_result
+
+- name: Display Firewall Rules
+  become: yes
+  shell: iptables -L | head -n5
+  register: firewall_result
+
+- debug: 
+    msg: "SAR output: {{ sar_result.stdout }}"
+
+- debug:
+    msg: "Uptime: {{ uptime_result.stdout }}"
+
+- debug:
+    msg: "Disk Usage: {{ disk_result.stdout }}"
+
+- debug:
+    msg: "Memory Usage: {{ memory_result.stdout }}"
+
+- debug:
+    msg: "Firewall Rules: {{ firewall_result.stdout }}"
+     

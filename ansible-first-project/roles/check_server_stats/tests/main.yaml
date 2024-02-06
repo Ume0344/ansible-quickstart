@@ -1,0 +1,5 @@
+- name: Test play for check_server_stat role
+  hosts: localhost
+  become: yes
+  roles:
+    - check_server_stats
